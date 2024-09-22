@@ -80,6 +80,7 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [state, dispatch] = useReducer(stateReducer, {
     ...initialState,
     ...getItem('state'),
+    startOnDate: new Date().toISOString().split('T')[0],
   });
 
   return (
