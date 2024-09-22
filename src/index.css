@@ -5,12 +5,21 @@
 :root {
   line-height: 1.5;
   font-weight: 400;
-
   overflow-x: hidden;
 }
+
 * {
   margin: 0;
   padding: 0;
+}
+
+html {
+  overflow-y: scroll;
+}
+
+html,
+body {
+  /* min-height: 90vh; */
 }
 
 /* 

@@ -1,25 +1,33 @@
 import React, { useContext } from 'react';
 import './Sidebar.scss';
-import { StateContext } from '../StateContext';
+import { AppStateContext } from '../AppStateContext';
 import { firstDayOfWeek } from '../utils/date';
 
 const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ openPDF, downloadPDF }) => {
-  const context = useContext(StateContext);
+  const context = useContext(AppStateContext);
 
   const { state, dispatch } = context!;
-  const { startOnDate, startWeekOn, weeksPerPage, pageSize, showYearFooter } = state;
+  const { startOnDate, startWeekOn, pageCount, weeksPerPage, pageSize, showYearFooter } = state;
 
   const getRange= (): string => {
     const startDate = firstDayOfWeek(new Date(startOnDate), startWeekOn === 'Sunday');
     const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 7 * weeksPerPage - 1);
+    endDate.setDate(endDate.getDate() + 7 * weeksPerPage * pageCount - 1);
 
     return `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
   }
 
   return (
     <div className="sidebar">
-      <h1>Calendar Generator</h1>
+      <div className="form-group">
+        <h1>Calendar Generator</h1>
+        <p>Range: { getRange() }</p>
+      </div>
+
+      <div className="form-group">
+        <button onClick={openPDF}>Open PDF</button>
+        <button onClick={downloadPDF}>Download PDF</button>
+      </div>
 
       <div className="form-group">
         <label htmlFor="startDate">Start on date</label>
@@ -29,7 +37,6 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
           value={startOnDate}
           onChange={(e) => dispatch({ type: 'SET_START_ON_DATE', payload: e.target.value })}
         />
-        <small>CalendarRange: { getRange() }</small>
       </div>
 
       <div className="form-group">
@@ -40,6 +47,18 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
           onChange={(e) => dispatch({ type: 'SET_WEEKS_PER_PAGE', payload: Number(e.target.value) })}
           min="4"
           max="24"
+          step="1"
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Page Count</label>
+        <input
+          type="number"
+          value={pageCount}
+          onChange={(e) => dispatch({ type: 'SET_PAGE_COUNT', payload: Number(e.target.value) })}
+          min="1"
+          max="10"
           step="1"
         />
       </div>
@@ -77,17 +96,12 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
         </label>
       </div>
 
-      <div className="form-group">
-        <button onClick={openPDF}>Open PDF</button>
-        <button onClick={downloadPDF}>Download PDF</button>
-      </div>
-
-      <div className="about">
+      {/* <div className="about">
         <h3>About (License)</h3>
         <p>
           Print out and plan your upcoming weeks. Mark only the most important milestones. Optionally strike out past days to visualize time passing.
         </p>
-      </div>
+      </div> */}
 
     </div>
   );

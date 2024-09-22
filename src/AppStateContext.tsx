@@ -5,6 +5,7 @@ export interface State {
   startOnDate: string;
   startWeekOn: string;
   weeksPerPage: number;
+  pageCount: number;
   pageSize: 'A4' | 'Letter';
   showYearFooter: boolean;
   margin: number;
@@ -14,6 +15,7 @@ const initialState: State = {
   startOnDate: '',
   startWeekOn: '',
   weeksPerPage: 4,
+  pageCount: 1,
   pageSize: 'A4',
   showYearFooter: true,
   margin: 10,
@@ -23,6 +25,7 @@ type Action =
   | { type: 'SET_START_ON_DATE'; payload: string }
   | { type: 'SET_START_WEEK_ON'; payload: string }
   | { type: 'SET_WEEKS_PER_PAGE'; payload: number }
+  | { type: 'SET_PAGE_COUNT'; payload: number }
   | { type: 'SET_PAGE_SIZE'; payload: 'A4' | 'Letter' }
   | { type: 'SET_YEAR_FOOTER'; payload: boolean }
   | { type: 'SET_MARGIN'; payload: number };
@@ -37,6 +40,8 @@ type Action =
           return { ...state, startWeekOn: action.payload };
         case 'SET_WEEKS_PER_PAGE':
           return { ...state, weeksPerPage: action.payload };
+        case 'SET_PAGE_COUNT':
+          return { ...state, pageCount: action.payload };
         case 'SET_PAGE_SIZE':
           return { ...state, pageSize: action.payload };
         case 'SET_YEAR_FOOTER':
@@ -58,17 +63,17 @@ interface StateContextProps {
   dispatch: Dispatch<Action>;
 }
 
-export const StateContext = createContext<StateContextProps | undefined>(undefined);
+export const AppStateContext = createContext<StateContextProps | undefined>(undefined);
 
-export const StateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const initState = getItem('state') || initialState;
   initState.startOnDate = new Date().toISOString().split('T')[0];
 
   const [state, dispatch] = useReducer(stateReducer, initState);
 
   return (
-    <StateContext.Provider value={{ state, dispatch }}>
+    <AppStateContext.Provider value={{ state, dispatch }}>
       {children}
-    </StateContext.Provider>
+    </AppStateContext.Provider>
   );
 };

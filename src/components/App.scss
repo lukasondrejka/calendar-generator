@@ -7,40 +7,60 @@ $mobile-breakpoint: 900px;
   background-color: #f9f9f9;
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
+  min-height: 100vh;
+  // min-width: 100vw;
 
   .calendar-box {
-    flex: 1;
+    flex: auto;
     text-align: center;
     position: sticky;
     top: 0;
 
+    // center vertically
+    align-items: center;
+
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    .calendar-page {
+      margin: 16px;
+      min-width: 700px;
+      height: auto;
+    }
+
     svg {
       box-shadow: $box-shadow;
-      height: calc(100svh - 48px);
     }
   }
 
   .sidebar-box {
+    background-color: #f9f9f9;
     width: $sidebar-width;
-    height: 100%;
+    height: 100vh;
+    min-width: 600px;
     overflow-y: auto;
+    position: sticky;
+    top: 0;
   }
 
   @media (max-width: $mobile-breakpoint) {
     flex-direction: column-reverse;
 
-    .calendar-box svg {
-      height: unset;
-      width: calc(100vw - 48px);
+    .calendar-box {
+      svg {
+        height: unset;
+        width: calc(100vw - 48px);
+      }
     }
 
     .sidebar-box {
       width: 100%;
       height: 100%;
       overflow-y: unset;
+      position: unset;
+      top: unset;
     }
   }
 }

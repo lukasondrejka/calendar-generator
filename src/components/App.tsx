@@ -1,34 +1,44 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import './App.scss';
-import { StateProvider } from '../StateContext';
+import { AppStateContext } from '../AppStateContext';
 import CalendarSVG from './CalendarSVG';
 import Sidebar from './Sidebar';
 import { downloadPDF, openPDF } from '../utils/pdf';
 
 const App: React.FC = () => {
-  const getCalendarElement = () => 
-    document.querySelector('#calendar')!;
+  const context = useContext(AppStateContext);
+  const { state } = context!;
+
+  const { pageCount } = state;
+
+  const getCalendarElements = () => 
+    Array.from(document.querySelectorAll('.calendar-svg'));
 
   const openPDFclick = () => 
-    openPDF(getCalendarElement());
+    openPDF(getCalendarElements());
 
   const downloadPDFclick = () => 
-    downloadPDF(getCalendarElement());
+    downloadPDF(getCalendarElements());
 
   return (
-    <StateProvider>
-      <div className="container">
-        <div className="calendar-box">
-          <CalendarSVG id="calendar" />
-        </div>
-        <div className="sidebar-box">
-          <Sidebar
-            openPDF={openPDFclick}
-            downloadPDF={downloadPDFclick}        
-          />
-        </div>
+    <div className="container">
+      <div className="calendar-box">
+        {Array.from({ length: pageCount }).map((_, index) => (
+          <div className="calendar-page" key={index}>
+            <CalendarSVG
+              pageIndex={index}
+              className="calendar-svg"
+            />
+          </div>
+        ))}
       </div>
-    </StateProvider>
+      <div className="sidebar-box">
+        <Sidebar
+          openPDF={openPDFclick}
+          downloadPDF={downloadPDFclick}        
+        />
+      </div>
+    </div>
   );
 };
 

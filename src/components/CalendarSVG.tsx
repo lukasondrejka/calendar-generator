@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import './CalendarSVG.scss';
-import { StateContext } from '../StateContext';
+import { AppStateContext } from '../AppStateContext';
 import { cmToPx, pxToCm } from '../utils/units';
 import { firstDayOfWeek } from '../utils/date';
 
@@ -9,16 +9,24 @@ const pageSizes = {
   Letter: { width: 21.59, height: 27.94 },
 };
 
-const CalendarSVG: React.FC<{ id: string }> = ({ id }) => {
-  const context = useContext(StateContext);
+// props
+interface CalendarSVGProps {
+  className?: string;
+  pageIndex?: number;
+}
+
+const CalendarSVG: React.FC<CalendarSVGProps> = ({ className, pageIndex }) => {
+  const context = useContext(AppStateContext);
   const { state } = context!;
 
   const generateSVG = () => {
-    const { startOnDate, weeksPerPage, startWeekOn, pageSize, showYearFooter } = state;
+    const { startOnDate, weeksPerPage, pageCount, startWeekOn, pageSize, showYearFooter } = state;
 
-    const margin = 0.75;
+    const margin = 1.5;
 
     const firstDay: Date = firstDayOfWeek(new Date(startOnDate), startWeekOn === 'Sunday');
+    firstDay.setDate(firstDay.getDate() + pageIndex! * weeksPerPage * 7);
+
     const { width: svgWidth, height: svgHeight } = pageSizes[pageSize as typeof pageSize];
 
     const daysOfWeek = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -32,7 +40,7 @@ const CalendarSVG: React.FC<{ id: string }> = ({ id }) => {
 
     return (
       <svg 
-        id={id}
+        className={className}
         viewBox={`0 0 ${cmToPx(svgWidth)} ${cmToPx(svgHeight)}`}
         xmlns="http://www.w3.org/2000/svg"
         style={{ 
@@ -129,9 +137,24 @@ const CalendarSVG: React.FC<{ id: string }> = ({ id }) => {
           <text
             textAnchor="middle"
             x={`${svgWidth / 2}cm`}
-            y={`${svgHeight - margin / 2}cm`}
+            y={`${svgHeight - margin + pxToCm(20)}cm`}
           >
-            {firstDay.getFullYear()}
+            {firstDay.getFullYear() === new Date(firstDay.getTime() + weeksPerPage * 7 * 24 * 60 * 60 * 1000).getFullYear() 
+              ? firstDay.getFullYear() 
+              : `${firstDay.getFullYear()} - ${new Date(firstDay.getTime() + weeksPerPage * 7 * 24 * 60 * 60 * 1000).getFullYear()}`
+            }
+          </text>
+        )}
+
+        {/* Page number */}
+        {pageCount > 1 && (
+          <text
+            textAnchor="end"
+            x={`${svgWidth - margin}cm`}
+            y={`${svgHeight - margin + pxToCm(18) }cm`}
+            fontSize="18px"
+          >
+            {pageIndex! + 1} / {pageCount}
           </text>
         )}
       </svg>

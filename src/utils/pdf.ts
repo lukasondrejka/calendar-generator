@@ -1,43 +1,51 @@
 // PDF utils
 
-import { jsPDF } from 'jspdf'
+import { jsPDF, jsPDFOptions } from 'jspdf'
 import 'svg2pdf.js'
 import { preprocessSVG } from './svg';
 import { pxToCm } from './units';
 
-export const openPDF = async (element: Element) => {
-  const document = await createPDF(element);
+export const openPDF = async (elements: Array<Element>) => {
+  const document = await createPDF(elements);
 
   if (document)
     window.open(document.output('bloburl'));
 }
 
-export const downloadPDF = async (element: Element) => {
-  const document = await createPDF(element);
+export const downloadPDF = async (elements: Array<Element>) => {
+  const document = await createPDF(elements);
 
   if (document)
     document.save('calendar.pdf');
 }
 
-const createPDF = async (element: Element): Promise<jsPDF | null> => {
-  if (!element) 
+const createPDF = async (elements: Array<Element>): Promise<jsPDF | null> => {
+  if (!elements || elements.length === 0 || !elements[0])
     return null;
 
-  const document: jsPDF = new jsPDF({
+  const options: jsPDFOptions = {
     orientation: 'portrait',
     format: [
-      pxToCm(element.clientWidth), 
-      pxToCm(element.clientHeight)
+      pxToCm(elements[0].clientWidth), 
+      pxToCm(elements[0].clientHeight)
     ],
     unit: 'cm',
-  });
+  };
+
+  const document: jsPDF = new jsPDF(options);
 
   document.setProperties({
     title: 'Calendar',
   });
 
-  // @ts-ignore
-  await document.svg(preprocessSVG(element));
+  for (const [index, element] of elements.entries()) {
+    console.log('element', element);
+    // @ts-ignore
+    await document.svg(preprocessSVG(element));
+    
+    if (index < elements.length - 1) 
+      document.addPage();
+  }
 
   return document;
 };
