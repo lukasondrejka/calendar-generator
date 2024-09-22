@@ -1,9 +1,9 @@
-import { StateProvider } from '../StateContext';
-import { downloadPDF, openPDF } from '../utils/pdf';
+import React from 'react';
 import './App.scss';
+import { StateProvider } from '../StateContext';
 import CalendarSVG from './CalendarSVG';
 import Sidebar from './Sidebar';
-import React from 'react';
+import { downloadPDF, openPDF } from '../utils/pdf';
 
 const App: React.FC = () => {
   const getCalendarElement = () => 
@@ -11,7 +11,6 @@ const App: React.FC = () => {
 
   const openPDFclick = () => 
     openPDF(getCalendarElement());
-
 
   const downloadPDFclick = () => 
     downloadPDF(getCalendarElement());

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import './CalendarSVG.scss';
-import { cmToPx, pxToCm } from '../utils/units';
 import { StateContext } from '../StateContext';
+import { cmToPx, pxToCm } from '../utils/units';
 import { firstDayOfWeek } from '../utils/date';
 
 const pageSizes = {
