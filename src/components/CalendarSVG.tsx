@@ -3,6 +3,7 @@ import './CalendarSVG.scss';
 import { AppStateContext } from '../AppStateContext';
 import { cmToPx, pxToCm } from '../utils/units';
 import { addWeeks, firstDayOfWeek } from '../utils/date';
+import { pageSizes } from '../utils/pdf';
 
 const CalendarSVG: React.FC<{pageIndex?: number}> = ({ pageIndex }) => {
   const context = useContext(AppStateContext);
@@ -163,11 +164,6 @@ const CalendarSVG: React.FC<{pageIndex?: number}> = ({ pageIndex }) => {
   };
 
   return generateSVG();
-};
-
-const pageSizes = {
-  A4: { width: 21, height: 29.7 },
-  Letter: { width: 21.59, height: 27.94 },
 };
 
 export default CalendarSVG;
