@@ -1,5 +1,6 @@
 import React, { createContext, useReducer, ReactNode, Dispatch } from 'react';
-import { setItem } from './utils/localStorage';
+import { getItem, setItem } from './utils/localStorage';
+import { merge } from './utils/object';
 
 export interface State {
   startOnDate: string;
@@ -10,6 +11,7 @@ export interface State {
   showYearFooter: boolean;
   margin: number;
   edgeLines: boolean;
+  timestamp?: number;
 }
 
 const initialState: State = {
@@ -24,6 +26,7 @@ const initialState: State = {
 };
 
 type Action =
+  | { type: 'RESET' }
   | { type: 'SET_START_ON_DATE'; payload: string }
   | { type: 'SET_START_WEEK_ON'; payload: string }
   | { type: 'SET_WEEKS_PER_PAGE'; payload: number }
@@ -37,6 +40,8 @@ type Action =
   const stateReducer = (state: State, action: Action): State => {
     const newState = (() => {
       switch (action.type) {
+        case 'RESET':
+          return initialState;
         case 'SET_START_ON_DATE':
           return { ...state, startOnDate: action.payload };
         case 'SET_START_WEEK_ON':
@@ -58,7 +63,7 @@ type Action =
       }
     })();
 
-    setItem('state', newState);
+    setItem('state', {...newState, timestamp: Date.now()});
 
     return newState;
 };
@@ -71,12 +76,10 @@ interface StateContextProps {
 export const AppStateContext = createContext<StateContextProps | undefined>(undefined);
 
 export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // const initState = getItem('state') || initialState;
-  const initState = initialState;
-
-  initState.startOnDate = new Date().toISOString().split('T')[0];
-
-  const [state, dispatch] = useReducer(stateReducer, initState);
+  const [state, dispatch] = useReducer(stateReducer, 
+    merge(merge(initialState, getItem('state')), {
+      startOnDate: new Date().toISOString().split('T')[0],
+    }) as State);
 
   return (
     <AppStateContext.Provider value={{ state, dispatch }}>
