@@ -1,6 +1,5 @@
 import React, { createContext, useReducer, ReactNode, Dispatch } from 'react';
 import { getItem, setItem } from './utils/localStorage';
-import { merge } from './utils/object';
 
 export interface State {
   startOnDate: string;
@@ -63,7 +62,9 @@ type Action =
       }
     })();
 
-    setItem('state', {...newState, timestamp: Date.now()});
+    newState.timestamp = Date.now();
+
+    setItem('state', newState);
 
     return newState;
 };
@@ -76,10 +77,10 @@ interface StateContextProps {
 export const AppStateContext = createContext<StateContextProps | undefined>(undefined);
 
 export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useReducer(stateReducer, 
-    merge(merge(initialState, getItem('state')), {
-      startOnDate: new Date().toISOString().split('T')[0],
-    }) as State);
+  const [state, dispatch] = useReducer(stateReducer, {
+    ...initialState,
+    ...getItem('state'),
+  });
 
   return (
     <AppStateContext.Provider value={{ state, dispatch }}>
