@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import './CalendarSVG.scss';
 import { AppStateContext } from '../AppStateContext';
 import { cmToPx, pxToCm } from '../utils/units';
-import { addDays, addWeeks, firstDayOfWeek } from '../utils/date';
+import { addWeeks, firstDayOfWeek } from '../utils/date';
 
 const CalendarSVG: React.FC<{pageIndex?: number}> = ({ pageIndex }) => {
   const context = useContext(AppStateContext);
