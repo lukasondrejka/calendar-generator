@@ -1,5 +1,3 @@
-// Units conversion functions
-
 export const cmToPx = (cm: number): number => 
   cm * 37.795275591;
 

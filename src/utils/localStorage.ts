@@ -1,5 +1,3 @@
-// LocalStorage helper functions
-
 export const setItem = (key: string, value: string | object) => {
   localStorage.setItem(key, JSON.stringify(value));
 }

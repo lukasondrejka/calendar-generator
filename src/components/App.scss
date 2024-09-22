@@ -2,10 +2,10 @@ $padding: 20px;
 $box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
 $sidebar-width: 600px;
 $mobile-breakpoint: 900px;
-$max-calendar-width: 500px;
-$max-calendar-height: 800px;
+$max-calendar-width: 600px;
+$max-calendar-height: calc(100vh - 40px);
 
-.container {
+.app {
   background-color: #f9f9f9;
   display: flex;
   justify-content: center;
@@ -29,13 +29,20 @@ $max-calendar-height: 800px;
       max-height: $max-calendar-height;
       width: 100%;
       height: auto;
-    }
 
-    svg {
-      box-shadow: $box-shadow;
-      height: auto;
-      max-width: $max-calendar-width;
-      max-height: $max-calendar-height;
+      svg {
+        box-shadow: $box-shadow;
+        height: auto;
+        max-width: $max-calendar-width;
+        max-height: $max-calendar-height;
+      }
+
+      // if one child, make it 100vh - 40px
+      &:only-child {
+        svg {
+          max-height: calc(100vh - 40px);
+        }
+      }
     }
   }
 
@@ -54,6 +61,7 @@ $max-calendar-height: 800px;
     flex-direction: column-reverse;
 
     .calendar-box {
+      margin: 0 20px;
       svg {
         height: unset;
         width: calc(100vw - 48px);

@@ -1,5 +1,3 @@
-// SVG utilities
-
 import { cmToPx } from './units';
 
 export const preprocessSVG = (element: Element): Element => {
@@ -20,4 +18,3 @@ const convertUnits = (svgContent: string): string => {
     return `${pxValue.toFixed(4)}px`;
   });
 };
-

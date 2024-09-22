@@ -9,26 +9,23 @@ const App: React.FC = () => {
   const context = useContext(AppStateContext);
   const { state } = context!;
 
-  const { pageCount } = state;
+  const { pageCount, pageSize } = state;
 
   const getCalendarElements = () => 
     Array.from(document.querySelectorAll('.calendar-svg'));
 
   const openPDFclick = () => 
-    openPDF(getCalendarElements());
+    openPDF(getCalendarElements(), pageSize);
 
   const downloadPDFclick = () => 
-    downloadPDF(getCalendarElements());
+    downloadPDF(getCalendarElements(), pageSize);
 
   return (
-    <div className="container">
+    <div className="app">
       <div className="calendar-box">
         {Array.from({ length: pageCount }).map((_, index) => (
           <div className="calendar-page" key={index}>
-            <CalendarSVG
-              pageIndex={index}
-              className="calendar-svg"
-            />
+            <CalendarSVG pageIndex={index} />
           </div>
         ))}
       </div>

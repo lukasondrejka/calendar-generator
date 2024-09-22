@@ -9,16 +9,18 @@ export interface State {
   pageSize: 'A4' | 'Letter';
   showYearFooter: boolean;
   margin: number;
+  edgeLines: boolean;
 }
 
 const initialState: State = {
   startOnDate: '',
   startWeekOn: '',
-  weeksPerPage: 4,
+  weeksPerPage: 12,
   pageCount: 1,
   pageSize: 'A4',
   showYearFooter: true,
-  margin: 10,
+  margin: 1.5,
+  edgeLines: true,
 };
 
 type Action =
@@ -28,7 +30,8 @@ type Action =
   | { type: 'SET_PAGE_COUNT'; payload: number }
   | { type: 'SET_PAGE_SIZE'; payload: 'A4' | 'Letter' }
   | { type: 'SET_YEAR_FOOTER'; payload: boolean }
-  | { type: 'SET_MARGIN'; payload: number };
+  | { type: 'SET_MARGIN'; payload: number }
+  | { type: 'SET_EDGE_LINES'; payload: boolean };
 
 
   const stateReducer = (state: State, action: Action): State => {
@@ -48,6 +51,8 @@ type Action =
           return { ...state, showYearFooter: action.payload };
         case 'SET_MARGIN':
           return { ...state, margin: action.payload };
+        case 'SET_EDGE_LINES':
+          return { ...state, edgeLines: action.payload };
         default:
           return state;
       }
@@ -66,7 +71,9 @@ interface StateContextProps {
 export const AppStateContext = createContext<StateContextProps | undefined>(undefined);
 
 export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const initState = getItem('state') || initialState;
+  // const initState = getItem('state') || initialState;
+  const initState = initialState;
+
   initState.startOnDate = new Date().toISOString().split('T')[0];
 
   const [state, dispatch] = useReducer(stateReducer, initState);

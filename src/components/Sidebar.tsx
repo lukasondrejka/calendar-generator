@@ -44,7 +44,7 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
         <input
           type="number"
           value={weeksPerPage}
-          onChange={(e) => dispatch({ type: 'SET_WEEKS_PER_PAGE', payload: Number(e.target.value) })}
+          onChange={(e) => dispatch({ type: 'SET_WEEKS_PER_PAGE', payload: Math.min(Number(e.target.value), 24) })}
           min="4"
           max="24"
           step="1"
@@ -56,7 +56,7 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
         <input
           type="number"
           value={pageCount}
-          onChange={(e) => dispatch({ type: 'SET_PAGE_COUNT', payload: Number(e.target.value) })}
+          onChange={(e) => dispatch({ type: 'SET_PAGE_COUNT', payload: Math.min(Number(e.target.value), 10) })}
           min="1"
           max="10"
           step="1"
@@ -80,8 +80,8 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
           value={startWeekOn}
           onChange={(e) => dispatch({ type: 'SET_START_WEEK_ON', payload: e.target.value })}
         >
-          <option value="Sunday">Sunday</option>
           <option value="Monday">Monday</option>
+          <option value="Sunday">Sunday</option>
         </select>
       </div>
 
@@ -93,6 +93,17 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
             onChange={(e) => dispatch({ type: 'SET_YEAR_FOOTER', payload: e.target.checked })}
           />
           Show year at the bottom
+        </label>
+      </div>
+
+      <div className="form-group">
+        <label>
+          <input
+            type="checkbox"
+            checked={state.edgeLines}
+            onChange={(e) => dispatch({ type: 'SET_EDGE_LINES', payload: e.target.checked })}
+          />
+          Show edge lines
         </label>
       </div>
 
