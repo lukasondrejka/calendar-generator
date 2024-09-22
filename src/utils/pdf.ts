@@ -36,6 +36,7 @@ const createPDF = async (element: Element): Promise<jsPDF | null> => {
     title: 'Calendar',
   });
 
+  // @ts-ignore
   await document.svg(preprocessSVG(element));
 
   return document;
