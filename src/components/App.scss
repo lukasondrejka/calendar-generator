@@ -2,23 +2,21 @@ $padding: 20px;
 $box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
 $sidebar-width: 600px;
 $mobile-breakpoint: 900px;
+$max-calendar-width: 500px;
+$max-calendar-height: 800px;
 
 .container {
   background-color: #f9f9f9;
   display: flex;
   justify-content: center;
   min-height: 100vh;
-  // min-width: 100vw;
 
   .calendar-box {
     flex: auto;
     text-align: center;
     position: sticky;
     top: 0;
-
-    // center vertically
     align-items: center;
-
     display: flex;
     justify-content: center;
     flex-direction: row;
@@ -26,12 +24,18 @@ $mobile-breakpoint: 900px;
 
     .calendar-page {
       margin: 16px;
-      min-width: 700px;
+      min-width: 300px;
+      max-width: $max-calendar-width;
+      max-height: $max-calendar-height;
+      width: 100%;
       height: auto;
     }
 
     svg {
       box-shadow: $box-shadow;
+      height: auto;
+      max-width: $max-calendar-width;
+      max-height: $max-calendar-height;
     }
   }
 
@@ -39,7 +43,8 @@ $mobile-breakpoint: 900px;
     background-color: #f9f9f9;
     width: $sidebar-width;
     height: 100vh;
-    min-width: 600px;
+    min-width: 480px;
+    width: 480px;
     overflow-y: auto;
     position: sticky;
     top: 0;
@@ -57,10 +62,29 @@ $mobile-breakpoint: 900px;
 
     .sidebar-box {
       width: 100%;
-      height: 100%;
+      height: auto; // Adjusted to fit content
       overflow-y: unset;
       position: unset;
       top: unset;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .calendar-box {
+      .calendar-page {
+        min-width: 100%;
+        margin: 8px;
+      }
+
+      svg {
+        width: 100%;
+      }
+    }
+
+    .sidebar-box {
+      width: 100%;
+      height: auto; 
+      min-width: unset;
     }
   }
 }
