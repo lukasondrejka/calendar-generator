@@ -1,5 +1,5 @@
 import React, { createContext, useReducer, ReactNode, Dispatch } from 'react';
-import { getItem, setItem } from './utils/localStorage';
+import { setItem } from './utils/localStorage';
 
 export interface State {
   startOnDate: string;
