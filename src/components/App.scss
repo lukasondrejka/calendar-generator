@@ -1,0 +1,46 @@
+$padding: 20px;
+$box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+$sidebar-width: 600px;
+$mobile-breakpoint: 900px;
+
+.container {
+  background-color: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+
+  .calendar-box {
+    flex: 1;
+    text-align: center;
+    position: sticky;
+    top: 0;
+
+    svg {
+      box-shadow: $box-shadow;
+      height: calc(100svh - 48px);
+    }
+  }
+
+  .sidebar-box {
+    width: $sidebar-width;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  @media (max-width: $mobile-breakpoint) {
+    flex-direction: column-reverse;
+
+    .calendar-box svg {
+      height: unset;
+      width: calc(100vw - 48px);
+    }
+
+    .sidebar-box {
+      width: 100%;
+      height: 100%;
+      overflow-y: unset;
+    }
+  }
+}
