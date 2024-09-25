@@ -1,5 +1,6 @@
 import React, { createContext, useReducer, ReactNode, Dispatch } from 'react';
 import { getItem, setItem } from './utils/localStorage';
+import { todayAsString } from './utils/date';
 
 export interface State {
   startOnDate: string;
@@ -14,7 +15,7 @@ export interface State {
 }
 
 const initialState: State = {
-  startOnDate: new Date().toISOString().split('T')[0],
+  startOnDate: todayAsString(),
   startWeekOn: '',
   weeksPerPage: 12,
   pageCount: 1,
@@ -79,7 +80,7 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [state, dispatch] = useReducer(reducer, {
     ...initialState,
     ...getItem('state'),
-    startOnDate: new Date().toISOString().split('T')[0],
+    startOnDate: todayAsString(),
   });
 
   return (

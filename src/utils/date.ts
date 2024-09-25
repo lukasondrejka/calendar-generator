@@ -16,3 +16,7 @@ export const addDays = (date: Date, days: number): Date => {
 export const addWeeks = (date: Date, weeks: number): Date => {
   return addDays(date, weeks * 7);
 }
+
+export const todayAsString = (): string => {
+  return new Date().toISOString().split('T')[0];
+}
