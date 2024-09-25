@@ -4,7 +4,7 @@ import { AppStateContext } from '../AppStateContext';
 import { firstDayOfWeek } from '../utils/date';
 
 const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ openPDF, downloadPDF }) => {
-  const context = useContext(AppStateContext);
+  const { state, dispatch }  = useContext(AppStateContext)!;
 
   const { state, dispatch } = context!;
   const { startOnDate, startWeekOn, pageCount, weeksPerPage, pageSize, showYearFooter } = state;

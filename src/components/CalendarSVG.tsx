@@ -6,8 +6,7 @@ import { addWeeks, firstDayOfWeek } from '../utils/date';
 import { pageSizes } from '../utils/pdf';
 
 const CalendarSVG: React.FC<{pageIndex?: number}> = ({ pageIndex }) => {
-  const context = useContext(AppStateContext);
-  const { state } = context!;
+  const { state } = useContext(AppStateContext)!;
 
   const generateSVG = () => {
     const { startOnDate, weeksPerPage, pageCount, startWeekOn, pageSize, showYearFooter, margin, edgeLines } = state;

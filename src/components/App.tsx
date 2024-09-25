@@ -6,8 +6,7 @@ import Sidebar from './Sidebar';
 import { downloadPDF, openPDF } from '../utils/pdf';
 
 const App: React.FC = () => {
-  const context = useContext(AppStateContext);
-  const { state } = context!;
+  const { state } = useContext(AppStateContext)!;
 
   const { pageCount, pageSize } = state;
 

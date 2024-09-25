@@ -14,7 +14,7 @@ export interface State {
 }
 
 const initialState: State = {
-  startOnDate: '',
+  startOnDate: new Date().toISOString().split('T')[0],
   startWeekOn: '',
   weeksPerPage: 12,
   pageCount: 1,
@@ -35,38 +35,37 @@ type Action =
   | { type: 'SET_MARGIN'; payload: number }
   | { type: 'SET_EDGE_LINES'; payload: boolean };
 
+const reducer = (state: State, action: Action): State => {
+  const newState = (() => {
+    switch (action.type) {
+      case 'RESET':
+        return initialState;
+      case 'SET_START_ON_DATE':
+        return { ...state, startOnDate: action.payload };
+      case 'SET_START_WEEK_ON':
+        return { ...state, startWeekOn: action.payload };
+      case 'SET_WEEKS_PER_PAGE':
+        return { ...state, weeksPerPage: action.payload };
+      case 'SET_PAGE_COUNT':
+        return { ...state, pageCount: action.payload };
+      case 'SET_PAGE_SIZE':
+        return { ...state, pageSize: action.payload };
+      case 'SET_YEAR_FOOTER':
+        return { ...state, showYearFooter: action.payload };
+      case 'SET_MARGIN':
+        return { ...state, margin: action.payload };
+      case 'SET_EDGE_LINES':
+        return { ...state, edgeLines: action.payload };
+      default:
+        return state;
+    }
+  })();
 
-  const stateReducer = (state: State, action: Action): State => {
-    const newState = (() => {
-      switch (action.type) {
-        case 'RESET':
-          return initialState;
-        case 'SET_START_ON_DATE':
-          return { ...state, startOnDate: action.payload };
-        case 'SET_START_WEEK_ON':
-          return { ...state, startWeekOn: action.payload };
-        case 'SET_WEEKS_PER_PAGE':
-          return { ...state, weeksPerPage: action.payload };
-        case 'SET_PAGE_COUNT':
-          return { ...state, pageCount: action.payload };
-        case 'SET_PAGE_SIZE':
-          return { ...state, pageSize: action.payload };
-        case 'SET_YEAR_FOOTER':
-          return { ...state, showYearFooter: action.payload };
-        case 'SET_MARGIN':
-          return { ...state, margin: action.payload };
-        case 'SET_EDGE_LINES':
-          return { ...state, edgeLines: action.payload };
-        default:
-          return state;
-      }
-    })();
+  newState.timestamp = Date.now();
 
-    newState.timestamp = Date.now();
+  setItem('state', newState);
 
-    setItem('state', newState);
-
-    return newState;
+  return newState;
 };
 
 interface StateContextProps {
@@ -77,7 +76,7 @@ interface StateContextProps {
 export const AppStateContext = createContext<StateContextProps | undefined>(undefined);
 
 export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useReducer(stateReducer, {
+  const [state, dispatch] = useReducer(reducer, {
     ...initialState,
     ...getItem('state'),
     startOnDate: new Date().toISOString().split('T')[0],
