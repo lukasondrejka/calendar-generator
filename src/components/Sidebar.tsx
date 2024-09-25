@@ -6,7 +6,6 @@ import { firstDayOfWeek } from '../utils/date';
 const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ openPDF, downloadPDF }) => {
   const { state, dispatch }  = useContext(AppStateContext)!;
 
-  const { state, dispatch } = context!;
   const { startOnDate, startWeekOn, pageCount, weeksPerPage, pageSize, showYearFooter } = state;
 
   const getRange= (): string => {
@@ -19,16 +18,20 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
 
   return (
     <div className="sidebar">
+
+      {/* Header */}
       <div className="form-group">
         <h1>Calendar Generator</h1>
         <p>Range: { getRange() }</p>
       </div>
 
+      {/* Buttons */}
       <div className="form-group">
         <button onClick={openPDF}>Open PDF</button>
         <button onClick={downloadPDF}>Download PDF</button>
       </div>
 
+      {/* Start on date */}
       <div className="form-group">
         <label htmlFor="startDate">Start on date</label>
         <input
@@ -39,6 +42,7 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
         />
       </div>
 
+      {/* Weeks per page */}
       <div className="form-group">
         <label>Number of weeks per page</label>
         <input
@@ -51,6 +55,7 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
         />
       </div>
 
+      {/* Page count */}
       <div className="form-group">
         <label>Page Count</label>
         <input
@@ -63,6 +68,7 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
         />
       </div>
 
+      {/* Page size */}
       <div className="form-group">
         <label>Page size</label>
         <select
@@ -74,6 +80,7 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
         </select>
       </div>
 
+      {/* Start week on */}
       <div className="form-group">
         <label>Start week on</label>
         <select
@@ -85,6 +92,7 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
         </select>
       </div>
 
+      {/* Show year */}
       <div className="form-group">
         <label>
           <input
@@ -96,6 +104,20 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
         </label>
       </div>
 
+      {/* Margin */}
+      <div className="form-group">
+        <label>Margin (cm)</label>
+        <input
+          type="number"
+          value={state.margin}
+          onChange={(e) => dispatch({ type: 'SET_MARGIN', payload: Math.min(Math.max(Number(e.target.value), 0.8), 3.0) })}
+          min="0.8"
+          max="3.0"
+          step="0.1"
+        />
+      </div>
+
+      {/* Show edge lines */}
       <div className="form-group">
         <label>
           <input
@@ -107,13 +129,10 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
         </label>
       </div>
 
-      {/* <div className="about">
-        <h3>About (License)</h3>
-        <p>
-          Print out and plan your upcoming weeks. Mark only the most important milestones. Optionally strike out past days to visualize time passing.
-        </p>
-      </div> */}
-
+      {/* Reset */}
+      <div className="form-group">
+        <button onClick={() => dispatch({ type: 'RESET' })}>Reset</button>
+      </div>
     </div>
   );
 };
