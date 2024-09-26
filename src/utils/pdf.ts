@@ -38,10 +38,10 @@ const createPDF = async (elements: Array<Element>, pageSize: 'A4' | 'Letter'): P
   });
 
   document.addFont(
-    'http://fonts.gstatic.com/s/worksans/v3/zVvigUiMvx7JVEnrJgc-5Q.ttf', 'Work Sans', 'normal');
+    'https://fonts.gstatic.com/s/worksans/v3/zVvigUiMvx7JVEnrJgc-5Q.ttf', 'Work Sans', 'normal');
 
   document.addFont(
-    'http://fonts.gstatic.com/s/worksans/v3/z9rX03Xuz9ZNHTMg1_ghGS3USBnSvpkopQaUR-2r7iU.ttf', 'Work Sans', 'normal', 'bold');
+    'https://fonts.gstatic.com/s/worksans/v3/z9rX03Xuz9ZNHTMg1_ghGS3USBnSvpkopQaUR-2r7iU.ttf', 'Work Sans', 'normal', 'bold');
   
   document.setFont('Work Sans');
 
