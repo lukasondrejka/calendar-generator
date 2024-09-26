@@ -8,7 +8,7 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
 
   const { startOnDate, startWeekOn, pageCount, weeksPerPage, pageSize, showYearFooter } = state;
 
-  const getRange= (): string => {
+  const getRange = (): string => {
     const startDate = firstDayOfWeek(new Date(startOnDate), startWeekOn === 'Sunday');
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 7 * weeksPerPage * pageCount - 1);
