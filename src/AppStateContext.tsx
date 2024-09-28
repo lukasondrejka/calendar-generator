@@ -14,7 +14,7 @@ export interface State {
   timestamp?: number;
 }
 
-const initialState = (reset: boolean =  false): State => {
+const initialState = (reset: boolean = false): State => {
   const defaultState: State = {
     startOnDate: todayAsString(),
     startWeekOn: '',
@@ -28,7 +28,7 @@ const initialState = (reset: boolean =  false): State => {
 
   const state: State = {
     ...defaultState,
-    ...getItem('state') as State,
+    ...(!reset ? getItem('state') : {}),
     timestamp: Date.now().valueOf(),
   };
 
@@ -50,7 +50,7 @@ const reducer = (state: State, action: Action): State => {
   const newState = (() => {
     switch (action.type) {
       case 'RESET':
-        return initialState();
+        return initialState(true);
       case 'SET_START_ON_DATE':
         return { ...state, startOnDate: action.payload };
       case 'SET_START_WEEK_ON':
@@ -71,6 +71,8 @@ const reducer = (state: State, action: Action): State => {
         return state;
     }
   })();
+
+  newState.timestamp = Date.now().valueOf();
 
   setItem('state', newState);
 
