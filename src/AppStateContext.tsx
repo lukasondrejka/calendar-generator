@@ -11,7 +11,7 @@ export interface State {
   showYearFooter: boolean;
   margin: number;
   edgeLines: boolean;
-  timestamp?: number;
+  timestamp: number;
 }
 
 const initialState = (reset: boolean = false): State => {
@@ -24,13 +24,17 @@ const initialState = (reset: boolean = false): State => {
     showYearFooter: true,
     margin: 1.5,
     edgeLines: true,
+    timestamp: Date.now().valueOf(),
   };
 
   const state: State = {
     ...defaultState,
     ...(!reset ? getItem('state') : {}),
-    timestamp: Date.now().valueOf(),
   };
+
+  if (state?.timestamp + 24 * 60 * 60 * 1000 > Date.now().valueOf()) {
+    state.startOnDate = todayAsString();
+  }
 
   return state;
 };
