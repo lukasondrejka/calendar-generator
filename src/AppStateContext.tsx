@@ -14,15 +14,25 @@ export interface State {
   timestamp?: number;
 }
 
-const initialState: State = {
-  startOnDate: todayAsString(),
-  startWeekOn: '',
-  weeksPerPage: 12,
-  pageCount: 1,
-  pageSize: 'A4',
-  showYearFooter: true,
-  margin: 1.5,
-  edgeLines: true,
+const initialState = (reset: boolean =  false): State => {
+  const defaultState: State = {
+    startOnDate: todayAsString(),
+    startWeekOn: '',
+    weeksPerPage: 12,
+    pageCount: 1,
+    pageSize: 'A4',
+    showYearFooter: true,
+    margin: 1.5,
+    edgeLines: true,
+  };
+
+  const state: State = {
+    ...defaultState,
+    ...getItem('state') as State,
+    timestamp: Date.now().valueOf(),
+  };
+
+  return state;
 };
 
 type Action =
@@ -40,7 +50,7 @@ const reducer = (state: State, action: Action): State => {
   const newState = (() => {
     switch (action.type) {
       case 'RESET':
-        return initialState;
+        return initialState();
       case 'SET_START_ON_DATE':
         return { ...state, startOnDate: action.payload };
       case 'SET_START_WEEK_ON':
@@ -62,8 +72,6 @@ const reducer = (state: State, action: Action): State => {
     }
   })();
 
-  newState.timestamp = Date.now();
-
   setItem('state', newState);
 
   return newState;
@@ -77,11 +85,7 @@ interface StateContextProps {
 export const AppStateContext = createContext<StateContextProps | undefined>(undefined);
 
 export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, {
-    ...initialState,
-    ...getItem('state'),
-    startOnDate: todayAsString(),
-  });
+  const [state, dispatch] = useReducer(reducer, initialState());
 
   return (
     <AppStateContext.Provider value={{ state, dispatch }}>
