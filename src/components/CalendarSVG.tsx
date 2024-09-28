@@ -27,10 +27,8 @@ const CalendarSVG: React.FC<{pageIndex?: number}> = ({ pageIndex }) => {
       className="calendar-svg"
       viewBox={`0 0 ${cmToPx(svgWidth)} ${cmToPx(svgHeight)}`}
       xmlns="http://www.w3.org/2000/svg"
-      style={{ 
-        fontFamily: 'Work Sans',
-        fontSize: '20px',
-      }}
+      fontFamily="Work Sans"
+      fontSize="20px"
     >
       {/* Background */}
       <rect
@@ -45,12 +43,14 @@ const CalendarSVG: React.FC<{pageIndex?: number}> = ({ pageIndex }) => {
           key={index} 
           textAnchor="middle" 
           x={`${margin + cellWidth / 2 + index * cellWidth}cm`} 
-          y={`${margin - 0.15}cm`}
+          y={`${margin - 0.18}cm`}
+          fontSize="14px"
         >
           {day}
         </text>
       ))}
   
+      {/* Content */}
       {Array.from({ length: weeksPerPage }).map((_, week) => {
         const y = margin + week * cellHeight;
         return (
@@ -129,7 +129,8 @@ const CalendarSVG: React.FC<{pageIndex?: number}> = ({ pageIndex }) => {
           <text
             textAnchor="middle"
             x={`${svgWidth / 2}cm`}
-            y={`${svgHeight - margin + pxToCm(20)}cm`}
+            y={`${svgHeight - margin + pxToCm(16)}cm`}
+            fontSize="16px"
           >
             {firstDay.getFullYear() === new Date(firstDay.getTime() + weeksPerPage * 7 * 24 * 60 * 60 * 1000).getFullYear() 
               ? firstDay.getFullYear() 
@@ -144,7 +145,8 @@ const CalendarSVG: React.FC<{pageIndex?: number}> = ({ pageIndex }) => {
               <text
                 textAnchor="middle"
                 x={`${svgWidth / 2}cm`}
-                y={`${svgHeight - margin + pxToCm(20)}cm`}
+                y={`${svgHeight - margin + pxToCm(16)}cm`}
+                fontSize="16px"
               >
                 {pageIndex! + 1} / {pageCount}
               </text>
@@ -154,7 +156,7 @@ const CalendarSVG: React.FC<{pageIndex?: number}> = ({ pageIndex }) => {
                 textAnchor="end"
                 x={`${svgWidth - margin}cm`}
                 y={`${svgHeight - margin + pxToCm(18) }cm`}
-                fontSize="18px"
+                fontSize="16px"
               >
                 {pageIndex! + 1} / {pageCount}
               </text>

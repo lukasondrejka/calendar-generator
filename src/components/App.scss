@@ -1,10 +1,3 @@
-$padding: 20px;
-$box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-$sidebar-width: 600px;
-$mobile-breakpoint: 900px;
-$max-calendar-width: 600px;
-$max-calendar-height: calc(100vh - 40px);
-
 .app {
   background-color: #f9f9f9;
   display: flex;
@@ -14,8 +7,6 @@ $max-calendar-height: calc(100vh - 40px);
   .calendar-box {
     flex: auto;
     text-align: center;
-    position: sticky;
-    top: 0;
     align-items: center;
     display: flex;
     justify-content: center;
@@ -23,76 +14,26 @@ $max-calendar-height: calc(100vh - 40px);
     flex-wrap: wrap;
 
     .calendar-page {
-      margin: 16px;
-      min-width: 300px;
-      max-width: $max-calendar-width;
-      max-height: $max-calendar-height;
-      width: 100%;
-      height: auto;
+      margin: 20px;
+      width: 40%;
 
-      svg {
-        box-shadow: $box-shadow;
-        height: auto;
-        max-width: $max-calendar-width;
-        max-height: $max-calendar-height;
+      .calendar-svg {
+        max-height: calc(80vh);
       }
 
-      // if one child, make it 100vh - 40px
       &:only-child {
-        svg {
-          max-height: calc(100vh - 40px);
+        .calendar-svg {
+          max-height: calc(100vh - 80px);
         }
       }
     }
   }
 
   .sidebar-box {
-    background-color: #f9f9f9;
-    width: $sidebar-width;
+    width: 560px;
     height: 100vh;
-    min-width: 480px;
-    width: 480px;
     overflow-y: auto;
     position: sticky;
     top: 0;
-  }
-
-  @media (max-width: $mobile-breakpoint) {
-    flex-direction: column-reverse;
-
-    .calendar-box {
-      margin: 0 20px;
-      svg {
-        height: unset;
-        width: calc(100vw - 48px);
-      }
-    }
-
-    .sidebar-box {
-      width: 100%;
-      height: auto; // Adjusted to fit content
-      overflow-y: unset;
-      position: unset;
-      top: unset;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .calendar-box {
-      .calendar-page {
-        min-width: 100%;
-        margin: 8px;
-      }
-
-      svg {
-        width: 100%;
-      }
-    }
-
-    .sidebar-box {
-      width: 100%;
-      height: auto; 
-      min-width: unset;
-    }
   }
 }

@@ -10,10 +10,10 @@ const App: React.FC = () => {
 
   const { pageCount, pageSize } = state;
 
-  const getCalendarElements = () => 
+  const getCalendarElements = (): Array<HTMLElement> =>
     Array.from(document.querySelectorAll('.calendar-svg'));
 
-  const openPDFclick = () => 
+  const openPDFclick = () =>
     openPDF(getCalendarElements(), pageSize);
 
   const downloadPDFclick = () => 
