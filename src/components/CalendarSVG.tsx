@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import './CalendarSVG.scss';
+import './CalendarSVG.css';
 import { AppStateContext } from '../AppStateContext';
 import { cmToPx, pxToCm } from '../utils/units';
 import { addWeeks, firstDayOfWeek } from '../utils/date';

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import './Sidebar.scss';
+import './Sidebar.css';
 import { AppStateContext } from '../AppStateContext';
 import { firstDayOfWeek } from '../utils/date';
 

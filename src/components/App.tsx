@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import './App.scss';
+import './App.css';
 import { AppStateContext } from '../AppStateContext';
 import CalendarSVG from './CalendarSVG';
 import Sidebar from './Sidebar';
