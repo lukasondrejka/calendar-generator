@@ -1,70 +1,551 @@
 .sidebar {
-  padding: 24px;
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* Header */
+
+.sidebar-header {
+  padding: 20px 24px 0;
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand-logo {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
 
   h1 {
-    font-size: 2em;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 1.125rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
   }
-  
-  .form-group:not(:last-child) {
-    margin-bottom: 15px;
-  }
-  
-  label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 4px;
-  }
-  
-  input[type="date"],
-  input[type="number"],
-  select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-  
-  input[type="checkbox"] {
-    margin-right: 8px;
-  }
-  
-  .about {
-    margin-top: 20px;
-    font-size: 0.9em;
-    color: #666;
+}
 
-    h3 {
-      font-size: 1.2em;
-      margin-bottom: 8px;
+/* Summary and actions */
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 16px 24px 0;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+
+  .summary-range {
+    font-size: 1rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .summary-meta {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+}
+
+.sidebar-actions {
+  padding: 12px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+
+  .actions-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+  }
+
+  .error {
+    margin-top: 10px;
+    font-size: 0.8125rem;
+    color: var(--danger);
+  }
+}
+
+/* Settings */
+
+.sidebar-body {
+  flex: 1;
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  h2 {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px 8px 14px;
+  border-top: 1px solid var(--border);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+/* Fields */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  border: none;
+
+  > label,
+  > legend {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    padding: 0;
+  }
+
+  > legend {
+    margin-bottom: 6px;
+  }
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+input[type="date"],
+.text-input,
+.stepper,
+.segmented,
+.select select {
+  height: 40px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input[type="date"],
+.text-input,
+.select select {
+  width: 100%;
+  padding: 0 12px;
+  outline: none;
+
+  &:hover {
+    border-color: var(--text-muted);
+  }
+
+  &:focus-visible {
+    border-color: var(--accent);
+    box-shadow: var(--focus);
+  }
+}
+
+/* Select with custom arrow */
+
+.select {
+  position: relative;
+
+  select {
+    appearance: none;
+    padding-right: 32px;
+    cursor: pointer;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border-right: 1.5px solid var(--text-muted);
+    border-bottom: 1.5px solid var(--text-muted);
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+  }
+}
+
+.text-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+/* More options */
+
+.more {
+  /* Safari doesn't support flex on details */
+  display: block;
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    h2 {
+      border-bottom: none;
+    }
+
+    &:hover h2,
+    &:hover .chevron {
+      color: var(--text);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: var(--focus);
+      border-radius: 4px;
     }
   }
 
-  button {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 1em;
-    color: #fff;
-    background-color: #007bff;
+  .chevron {
+    width: 16px;
+    height: 16px;
+    margin-bottom: 8px;
+    fill: none;
+    stroke: var(--text-muted);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.2s;
+  }
+
+  &[open] .chevron {
+    transform: rotate(180deg);
+  }
+
+  .more-content {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 14px;
+  }
+}
+
+/* Date presets */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+
+  &:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
+  }
+
+  &.active {
+    background: var(--accent-soft);
+    border-color: transparent;
+    color: var(--accent);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--focus);
+  }
+}
+
+/* Number stepper */
+
+.stepper {
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+
+  &:focus-within {
+    border-color: var(--accent);
+    box-shadow: var(--focus);
+  }
+}
+
+.stepper-btn {
+  width: 36px;
+  flex-shrink: 0;
+  border: none;
+  background: var(--surface-muted);
+  color: var(--text-muted);
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+}
+
+.stepper-input {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-inline: 1px solid var(--border);
+
+  input {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
     border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    outline: none;
+    background: transparent;
     text-align: center;
-    text-decoration: none;
-    transition: background-color 0.3s;
+    font-variant-numeric: tabular-nums;
+    appearance: textfield;
+    -moz-appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+
+  &:has(.unit) input {
+    width: 3.5ch;
+    text-align: right;
+  }
+
+  .unit {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+}
+
+/* Segmented control */
+
+.segmented {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: 3px;
+  padding: 3px;
+  background: var(--surface-muted);
+
+  label {
+    /* Keeps the hidden radio inside, otherwise it stretches the page height */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s, color 0.15s;
 
     &:hover {
-      background-color: #0056b3;
+      color: var(--text);
     }
 
-    &:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
+    &.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--border);
     }
 
-    &:not(:last-child) {
-      margin-right: 16px;
+    &:has(input:focus-visible) {
+      box-shadow: var(--focus);
     }
+  }
+
+  input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* Toggle switch */
+
+.toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  user-select: none;
+
+  .toggle-text {
+    display: flex;
+    flex-direction: column;
+
+    small {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  }
+
+  input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .toggle-track {
+    position: relative;
+    flex-shrink: 0;
+    width: 38px;
+    height: 22px;
+    border-radius: 999px;
+    background: var(--border-strong);
+    transition: background-color 0.2s;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s;
+    }
+  }
+
+  input:checked + .toggle-track {
+    background: var(--accent);
+
+    &::after {
+      transform: translateX(16px);
+    }
+  }
+
+  input:focus-visible + .toggle-track {
+    box-shadow: var(--focus);
+  }
+}
+
+/* Narrow sidebar (small laptops, tablets) */
+
+@media (max-width: 1100px) {
+  .sidebar-header,
+  .sidebar-actions,
+  .sidebar-body {
+    padding-inline: 20px;
+  }
+
+  .summary {
+    margin-inline: 20px;
+  }
+
+  .sidebar-header {
+    .brand {
+      gap: 8px;
+    }
+
+    h1 {
+      font-size: 1rem;
+    }
+  }
+}
+
+/* Mobile and very short windows: the sidebar flows with the page, the actions stick to the top */
+
+@media (max-width: 719px), (max-height: 499px) {
+  .sidebar {
+    display: contents;
+  }
+
+  .sidebar-header {
+    padding: 16px 16px 0;
+  }
+
+  .summary {
+    margin: 12px 16px 0;
+  }
+
+  .sidebar-actions {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 12px 16px;
+  }
+
+  .sidebar-body {
+    padding: 20px 16px 24px;
+  }
+
+  .sidebar-footer {
+    padding-inline: 6px;
+  }
+}
+
+@media (max-width: 360px) {
+  .field-row {
+    grid-template-columns: 1fr;
   }
 }

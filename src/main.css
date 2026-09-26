@@ -1,18 +1,243 @@
 :root {
-  font-family: "Work Sans", sans-serif;
+  --bg: #f4f3ef;
+  --surface: #ffffff;
+  --surface-muted: #f7f6f3;
+  --border: #e3e1db;
+  --border-strong: #cfccc4;
+  --text: #1d1c1a;
+  --text-muted: #6b6860;
+  --accent: #2f5bd3;
+  --accent-hover: #2449b3;
+  --accent-soft: #e8eefc;
+  --on-accent: #ffffff;
+  --danger: #b42318;
+  --shadow-page: 0 1px 2px rgba(28, 25, 20, 0.06), 0 8px 24px rgba(28, 25, 20, 0.08);
+  --focus: 0 0 0 3px rgba(47, 91, 211, 0.3);
+  --radius: 10px;
+  --radius-sm: 7px;
+
+  color-scheme: light;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
   line-height: 1.5;
   font-weight: 400;
-  overflow-x: hidden;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
 }
 
-* {
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #151515;
+    --surface: #1e1e1e;
+    --surface-muted: #262626;
+    --border: #333331;
+    --border-strong: #45443f;
+    --text: #ecebe7;
+    --text-muted: #a3a097;
+    --accent: #7c9cf0;
+    --accent-hover: #97b1f5;
+    --accent-soft: #25304a;
+    --on-accent: #0f1320;
+    --danger: #f0857a;
+    --shadow-page: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.45);
+    --focus: 0 0 0 3px rgba(124, 156, 240, 0.4);
+
+    color-scheme: dark;
+  }
+}
+
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html {
-  overflow-y: scroll;
+html,
+body {
+  background: var(--bg);
+  /* clip, not hidden – hidden would break position: sticky on mobile */
+  overflow-x: clip;
+}
+
+.hint {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Buttons */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: 0.9375rem;
+  font-weight: 550;
+  white-space: nowrap;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--focus);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--on-accent);
+
+  &:hover:not(:disabled) {
+    background: var(--accent-hover);
+  }
+}
+
+.btn-secondary {
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--text);
+
+  &:hover:not(:disabled) {
+    background: var(--surface-muted);
+  }
+}
+
+.btn-ghost {
+  height: 36px;
+  padding: 0 10px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+
+  &:hover {
+    color: var(--text);
+    background: var(--surface-muted);
+  }
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+
+  &:hover {
+    background: var(--surface-muted);
+    color: var(--text);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--focus);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  svg.gh {
+    fill: currentColor;
+    stroke: none;
+  }
+}
+
+.icon-btn-sm {
+  width: 30px;
+  height: 30px;
+
+  svg {
+    width: 17px;
+    height: 17px;
+  }
+}
+
+.link-btn {
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text);
+    text-decoration: underline;
+  }
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
 }

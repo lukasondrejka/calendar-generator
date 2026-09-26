@@ -1,138 +1,214 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import './Sidebar.css';
-import { AppStateContext } from '../AppStateContext';
-import { firstDayOfWeek, parseDate } from '../utils/date';
+import { limits, locales } from '../settings';
+import type { PageSize, Settings, Units, WeekStart } from '../settings';
+import { paperSizes } from '../calendar';
+import type { CalendarPage } from '../calendar';
+import { formatDate, formatDateRange, MAX_YEAR, MIN_YEAR, toDateString } from '../utils/date';
+import { cmToIn, inToCm, roundTo } from '../utils/units';
+import { GITHUB_URL } from '../constants';
+import { NumberField, Segmented, SelectField, TextField, Toggle } from './FormControls';
+import { AppLogo, GitHubIcon } from './Icons';
 
-const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ openPDF, downloadPDF }) => {
-  const { state, dispatch }  = useContext(AppStateContext)!;
+const datePresets = () => {
+  const today = new Date();
+  return [
+    { label: 'Today', value: toDateString(today) },
+    { label: 'This month', value: toDateString(new Date(today.getFullYear(), today.getMonth(), 1)) },
+    { label: 'Next month', value: toDateString(new Date(today.getFullYear(), today.getMonth() + 1, 1)) },
+  ];
+};
 
-  const { startOnDate, startWeekOn, pageCount, weeksPerPage, pageSize, showYearFooter } = state;
+const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;
 
-  const getRange = (): string => {
-    const startDate = firstDayOfWeek(parseDate(startOnDate), startWeekOn === 'Sunday');
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 7 * weeksPerPage * pageCount - 1);
+const Sidebar: React.FC<{
+  settings: Settings;
+  pages: CalendarPage[];
+  update: (changes: Partial<Settings>) => void;
+  reset: () => void;
+  busy: boolean;
+  error: string | null;
+  onDownload: () => void;
+  onOpen: () => void;
+}> = ({ settings, pages, update, reset, busy, error, onDownload, onOpen }) => {
+  const {
+    weeksPerPage, startOnDate, startWeekOn, pageCount,
+    title, pageSize, margin, units, locale, shadeWeekends, showWeekNumbers,
+  } = settings;
 
-    return `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
-  }
+  const startDate = pages[0].rangeStart;
+  const endDate = pages[pages.length - 1].rangeEnd;
+
+  const toUnits = (lengthCm: number, step: number) => roundTo(units === 'in' ? cmToIn(lengthCm) : lengthCm, step);
+  const paper = paperSizes[pageSize];
+  const marginLimits = limits.margin[units];
 
   return (
     <div className="sidebar">
+      <header className="sidebar-header">
+        <div className="brand">
+          <AppLogo />
+          <h1>Calendar Generator</h1>
+        </div>
+      </header>
 
-      {/* Header */}
-      <div className="form-group">
-        <h1>Calendar Generator</h1>
-        <p>Range: { getRange() }</p>
+      <div className="summary" aria-live="polite">
+        <span className="summary-range">{formatDateRange(startDate, endDate)}</span>
+        <span className="summary-meta">
+          {plural(weeksPerPage * pageCount, 'week')}
+          {' '}· {plural(pageCount, 'page')} · {pageSize}
+        </span>
       </div>
 
-      {/* Buttons */}
-      <div className="form-group">
-        <button onClick={openPDF}>Open PDF</button>
-        <button onClick={downloadPDF}>Download PDF</button>
+      <div className="sidebar-actions">
+        <div className="actions-row">
+          <button type="button" className="btn btn-primary" onClick={onDownload} disabled={busy}>
+            {busy ? <span className="spinner" aria-hidden="true" /> : (
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" /></svg>
+            )}
+            {busy ? 'Generating…' : 'Download PDF'}
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={onOpen}
+            disabled={busy}
+            title="Open the PDF in a new tab to view or print it"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></svg>
+            Open
+          </button>
+        </div>
+        {error && <p className="error" role="alert">{error}</p>}
       </div>
 
-      {/* Start on date */}
-      <div className="form-group">
-        <label htmlFor="startDate">Start on date</label>
-        <input
-          type="date"
-          id="startDate"
-          value={startOnDate}
-          onChange={(e) => dispatch({ type: 'SET_START_ON_DATE', payload: e.target.value })}
-        />
-      </div>
-
-      {/* Weeks per page */}
-      <div className="form-group">
-        <label>Number of weeks per page</label>
-        <input
-          type="number"
-          value={weeksPerPage}
-          onChange={(e) => dispatch({ type: 'SET_WEEKS_PER_PAGE', payload: Math.min(Number(e.target.value), 24) })}
-          min="4"
-          max="24"
-          step="1"
-        />
-      </div>
-
-      {/* Page count */}
-      <div className="form-group">
-        <label>Page Count</label>
-        <input
-          type="number"
-          value={pageCount}
-          onChange={(e) => dispatch({ type: 'SET_PAGE_COUNT', payload: Math.min(Number(e.target.value), 10) })}
-          min="1"
-          max="10"
-          step="1"
-        />
-      </div>
-
-      {/* Page size */}
-      <div className="form-group">
-        <label>Page size</label>
-        <select
-          value={pageSize}
-          onChange={(e) => dispatch({ type: 'SET_PAGE_SIZE', payload: e.target.value as 'A4' | 'Letter' })}
-        >
-          <option value="A4">A4</option>
-          <option value="Letter">Letter</option>
-        </select>
-      </div>
-
-      {/* Start week on */}
-      <div className="form-group">
-        <label>Start week on</label>
-        <select
-          value={startWeekOn}
-          onChange={(e) => dispatch({ type: 'SET_START_WEEK_ON', payload: e.target.value })}
-        >
-          <option value="Monday">Monday</option>
-          <option value="Sunday">Sunday</option>
-        </select>
-      </div>
-
-      {/* Show year */}
-      <div className="form-group">
-        <label>
-          <input
-            type="checkbox"
-            checked={showYearFooter}
-            onChange={(e) => dispatch({ type: 'SET_YEAR_FOOTER', payload: e.target.checked })}
+      <div className="sidebar-body">
+        <section className="panel">
+          <h2>Layout</h2>
+          <NumberField
+            id="weeksPerPage"
+            label="Weeks per page"
+            value={weeksPerPage}
+            {...limits.weeksPerPage}
+            onChange={(value) => update({ weeksPerPage: value })}
           />
-          Show year at the bottom
-        </label>
+        </section>
+
+        <section className="panel">
+          <h2>Dates</h2>
+          <div className="field">
+            <label htmlFor="startDate">Start date</label>
+            <input
+              type="date"
+              id="startDate"
+              value={startOnDate}
+              min={`${MIN_YEAR}-01-01`}
+              max={`${MAX_YEAR}-12-31`}
+              onChange={(e) => update({ startOnDate: e.target.value })}
+            />
+            <div className="chips">
+              {datePresets().map((preset) => (
+                <button
+                  key={preset.label}
+                  type="button"
+                  className={`chip ${preset.value === startOnDate ? 'active' : ''}`}
+                  onClick={() => update({ startOnDate: preset.value })}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="field-row">
+            <NumberField
+              id="pageCount"
+              label="Pages"
+              hint={`Until ${formatDate(endDate)}`}
+              value={pageCount}
+              {...limits.pageCount}
+              onChange={(value) => update({ pageCount: value })}
+            />
+            <Segmented<WeekStart>
+              name="startWeekOn"
+              label="Week starts on"
+              options={['Monday', 'Sunday']}
+              value={startWeekOn}
+              onChange={(value) => update({ startWeekOn: value })}
+            />
+          </div>
+        </section>
+
+        <details className="panel more">
+          <summary>
+            <h2>More options</h2>
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="chevron"><path d="m6 9 6 6 6-6" /></svg>
+          </summary>
+          <div className="more-content">
+            <TextField
+              id="title"
+              label="Title"
+              hint="Optional, printed in the header next to the months"
+              placeholder="e.g. Marathon training"
+              value={title}
+              maxLength={limits.title.maxLength}
+              onChange={(value) => update({ title: value })}
+            />
+            <Segmented<PageSize>
+              name="pageSize"
+              label="Paper size"
+              hint={`${toUnits(paper.width, 0.01)} × ${toUnits(paper.height, 0.01)} ${units}`}
+              options={['A4', 'Letter']}
+              value={pageSize}
+              onChange={(value) => update({ pageSize: value })}
+            />
+            <div className="field-row">
+              <NumberField
+                id="margin"
+                label="Margin"
+                unit={units}
+                value={toUnits(margin, marginLimits.step)}
+                {...marginLimits}
+                onChange={(value) => update({ margin: units === 'in' ? inToCm(value) : value })}
+              />
+              <Segmented<Units>
+                name="units"
+                label="Units"
+                options={['cm', 'in']}
+                value={units}
+                onChange={(value) => update({ units: value })}
+              />
+            </div>
+            <SelectField
+              id="locale"
+              label="Language"
+              value={locale}
+              options={locales}
+              onChange={(value) => update({ locale: value })}
+            />
+            <div className="toggles">
+              <Toggle
+                label="Shade weekends"
+                checked={shadeWeekends}
+                onChange={(checked) => update({ shadeWeekends: checked })}
+              />
+              <Toggle
+                label="Week numbers"
+                checked={showWeekNumbers}
+                onChange={(checked) => update({ showWeekNumbers: checked })}
+              />
+            </div>
+          </div>
+        </details>
       </div>
 
-      {/* Margin */}
-      <div className="form-group">
-        <label>Margin (cm)</label>
-        <input
-          type="number"
-          value={state.margin}
-          onChange={(e) => dispatch({ type: 'SET_MARGIN', payload: Math.min(Math.max(Number(e.target.value), 0.8), 3.0) })}
-          min="0.8"
-          max="3.0"
-          step="0.1"
-        />
-      </div>
-
-      {/* Show edge lines */}
-      <div className="form-group">
-        <label>
-          <input
-            type="checkbox"
-            checked={state.edgeLines}
-            onChange={(e) => dispatch({ type: 'SET_EDGE_LINES', payload: e.target.checked })}
-          />
-          Show edge lines
-        </label>
-      </div>
-
-      {/* Reset */}
-      <div className="form-group">
-        <button onClick={() => dispatch({ type: 'RESET' })}>Reset</button>
-      </div>
+      <footer className="sidebar-footer">
+        <button type="button" className="btn btn-ghost" onClick={reset} title="Reset all settings to defaults">
+          Reset
+        </button>
+        <a className="icon-btn icon-btn-sm" href={GITHUB_URL} target="_blank" rel="noreferrer" aria-label="Source on GitHub" title="Source on GitHub">
+          <GitHubIcon />
+        </a>
+      </footer>
     </div>
   );
 };

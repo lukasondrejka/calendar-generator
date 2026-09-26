@@ -1,110 +1,133 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import './CalendarSVG.css';
-import { AppStateContext } from '../AppStateContext';
-import { cmToPx, pxToCm } from '../utils/units';
-import { addWeeks, firstDayOfWeek, parseDate } from '../utils/date';
-import { pageSizes } from '../utils/pdf';
+import { resolveLocale } from '../settings';
+import type { Settings } from '../settings';
+import { HEADER_HEIGHT, paperSizes, ROW_GAP, WEEK_NUMBER_WIDTH } from '../calendar';
+import type { CalendarPage } from '../calendar';
+import { addDays, isoWeek, monthLabel, monthRange, weekdayLabels } from '../utils/date';
+import { fitText, textWidth } from '../utils/text';
+import { cmToPx } from '../utils/units';
 
-const CalendarSVG: React.FC<{pageIndex?: number}> = ({ pageIndex }) => {
-  const { state } = useContext(AppStateContext)!;
+const LINE = '#000';
+const WEEKEND_FILL = '#f0f0f0';
+const MUTED_TEXT = '#666';
+const OUTSIDE_TEXT = '#b3b3b3';
 
-  const { startOnDate, weeksPerPage, pageCount, startWeekOn, pageSize, showYearFooter, margin, edgeLines } = state;
+const cm = (value: number) => `${value}cm`;
 
-  const { width: svgWidth, height: svgHeight } = pageSizes[pageSize as typeof pageSize];
+const CalendarSVG: React.FC<{
+  settings: Settings;
+  page: CalendarPage;
+  pageNumber: number;
+  pageCount: number;
+}> = ({ settings, page, pageNumber, pageCount }) => {
+  const { startWeekOn, pageSize, margin, title, shadeWeekends, showWeekNumbers } = settings;
+  const { firstDay, weeks, rangeStart, rangeEnd } = page;
+  const locale = resolveLocale(settings.locale);
+  const startsOnSunday = startWeekOn === 'Sunday';
+  const { width, height } = paperSizes[pageSize];
 
-  const firstDay: Date = addWeeks(firstDayOfWeek(parseDate(startOnDate), startWeekOn === 'Sunday'),
-    pageIndex! * weeksPerPage);
+  // Week numbers get their own column inside the margin area
+  const left = margin + (showWeekNumbers ? WEEK_NUMBER_WIDTH : 0);
+  const right = width - margin;
+  const top = margin + HEADER_HEIGHT;
+  const bottom = height - margin;
+  const cellWidth = (right - left) / 7;
+  const cellHeight = (bottom - top) / weeks;
+  const headerY = margin + 0.55;
 
-  const daysOfWeek = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  if (startWeekOn === 'Sunday')
-    daysOfWeek.unshift(daysOfWeek.pop()!);
-
-  const cellWidth = (svgWidth - 2 * margin) / daysOfWeek.length;
-  const cellHeight = (svgHeight - 2 * margin) / weeksPerPage;
+  const months = monthRange(rangeStart, rangeEnd, locale);
+  const header = title.trim()
+    ? fitText(title.trim(), right - left - textWidth(months, 14) - 0.6, 20, 12, 'bold')
+    : null;
 
   return (
-    <svg 
+    <svg
       className="calendar-svg"
-      viewBox={`0 0 ${cmToPx(svgWidth)} ${cmToPx(svgHeight)}`}
+      viewBox={`0 0 ${cmToPx(width)} ${cmToPx(height)}`}
       xmlns="http://www.w3.org/2000/svg"
       fontFamily="Work Sans"
       fontSize="20px"
+      role="img"
+      aria-label={`Calendar page ${pageNumber}`}
     >
-      {/* Background */}
-      <rect
-        width={`${svgWidth}cm`} 
-        height={`${svgHeight}cm`} 
-        fill="#FFF"
-      />
-  
-      {/* Header (days of the week) */}
-      {daysOfWeek.map((day, index) => (
-        <text 
-          key={index} 
-          textAnchor="middle" 
-          x={`${margin + cellWidth / 2 + index * cellWidth}cm`} 
-          y={`${margin - 0.18}cm`}
-          fontSize="14px"
-        >
+      <rect width={cm(width)} height={cm(height)} fill="#fff" />
+
+      {/* Header: the title (if any) with the months on the right, or just the months */}
+      {header && (
+        <text x={cm(left)} y={cm(headerY)} fontSize={`${header.fontSize}px`} fontWeight="bold">
+          {header.text}
+        </text>
+      )}
+      <text
+        x={cm(header ? right : left)}
+        y={cm(headerY)}
+        textAnchor={header ? 'end' : 'start'}
+        fontSize={header ? '14px' : '20px'}
+        fontWeight={header ? 'normal' : 'bold'}
+        fill={header ? MUTED_TEXT : undefined}
+      >
+        {months}
+      </text>
+
+      {weekdayLabels(locale, startsOnSunday).map((day, index) => (
+        <text key={index} textAnchor="middle" x={cm(left + (index + 0.5) * cellWidth)} y={cm(top - 0.18)} fontSize="18px">
           {day}
         </text>
       ))}
-  
-      {/* Content */}
-      {Array.from({ length: weeksPerPage }).map((_, week) => {
-        const y = margin + week * cellHeight;
+
+      {Array.from({ length: weeks }, (_, week) => {
+        const y = top + week * cellHeight;
+        const weekStart = addDays(firstDay, week * 7);
+        const days = Array.from({ length: 7 }, (_, day) => addDays(weekStart, day));
+        const numberY = y + 0.535;
+
         return (
           <React.Fragment key={week}>
-            {/* Horizontal lines */}
-            <line 
-              x1={`${margin}cm`} 
-              y1={`${y}cm`} 
-              x2={`${svgWidth - margin}cm`} 
-              y2={`${y}cm`} 
-              style={{ stroke: 'rgb(0, 0, 0)', strokeWidth: 1 }}
-            />
-            
-            {Array.from({ length: daysOfWeek.length + 1 }).map((_, day) => {
-              const x = margin + day * cellWidth;
-              const date = new Date(firstDay);
-              date.setDate(firstDay.getDate() + week * 7 + day);
+            {shadeWeekends && days.map((date, day) => (date.getDay() === 0 || date.getDay() === 6) && (
+              <rect
+                key={day}
+                x={cm(left + day * cellWidth)}
+                y={cm(y)}
+                width={cm(cellWidth)}
+                height={cm(cellHeight - ROW_GAP)}
+                fill={WEEKEND_FILL}
+              />
+            ))}
+
+            {showWeekNumbers && (
+              <text textAnchor="end" x={cm(left - 0.2)} y={cm(numberY)} fontSize="16px" fill={MUTED_TEXT}>
+                {isoWeek(days[startsOnSunday ? 1 : 0])}
+              </text>
+            )}
+
+            <line x1={cm(left)} y1={cm(y)} x2={cm(right)} y2={cm(y)} stroke={LINE} />
+            {Array.from({ length: 8 }, (_, column) => (
+              <line
+                key={column}
+                x1={cm(left + column * cellWidth)}
+                y1={cm(y)}
+                x2={cm(left + column * cellWidth)}
+                y2={cm(y + cellHeight - ROW_GAP)}
+                stroke={LINE}
+              />
+            ))}
+
+            {/* Day numbers, the 1st also gets the month name */}
+            {days.map((date, day) => {
+              const x = cm(left + (day + 0.5) * cellWidth);
+              const isFirst = date.getDate() === 1;
+              const fill = date < rangeStart || date > rangeEnd ? OUTSIDE_TEXT : undefined;
               return (
                 <React.Fragment key={day}>
-                  {/* Vertical lines */}
-                  {((day > 0 && day < daysOfWeek.length) || edgeLines) && (
-                    <line 
-                      x1={`${x}cm`} 
-                      y1={`${y}cm`} 
-                      x2={`${x}cm`} 
-                      y2={`${y + cellHeight - 0.4}cm`}
-                      style={{ stroke: 'rgb(0, 0, 0)', strokeWidth: 1 }}
-                    />
+                  {isFirst && (
+                    <text textAnchor="middle" x={x} y={cm(y + 0.39)} fontSize="16px" fontWeight="bold" fill={fill}>
+                      {monthLabel(date, locale)}
+                    </text>
                   )}
-
-                  {/* Day header */}
-                  {day < daysOfWeek.length && (
-                    <>
-                      <text 
-                        textAnchor="middle" 
-                        x={`${margin + cellWidth / 2 + day * cellWidth}cm`} 
-                        y={`${margin + week * cellHeight - pxToCm(20) / 2 + 0.8 + (date.getDate() === 1 ? + 0.4 : 0) }cm`}
-                      >
-                        {date.getDate()}
-                      </text>
-
-                      {date.getDate() === 1 && (
-                        <text
-                          textAnchor="middle"
-                          fontWeight="bold"
-                          fontSize={`16px`}
-                          x={`${margin + cellWidth / 2 + day * cellWidth}cm`}
-                          y={`${margin + week * cellHeight - pxToCm(16) / 2 + 0.6 }cm`}
-                        >
-                          {date.toLocaleString('default', { month: 'short' }).toUpperCase()}
-                        </text>
-                      )}
-                    </>
-                  )}
+                  <text textAnchor="middle" x={x} y={cm(numberY + (isFirst ? 0.4 : 0))} fill={fill}>
+                    {date.getDate()}
+                  </text>
                 </React.Fragment>
               );
             })}
@@ -112,58 +135,12 @@ const CalendarSVG: React.FC<{pageIndex?: number}> = ({ pageIndex }) => {
         );
       })}
 
-      {/* Footer horisontal line */}
-      {edgeLines && (
-        <line
-          x1={`${margin}cm`}
-          y1={`${svgHeight - margin}cm`}
-          x2={`${svgWidth - margin}cm`}
-          y2={`${svgHeight - margin}cm`}
-          style={{ stroke: 'rgb(0, 0, 0)', strokeWidth: 1 }}
-        />
+      <line x1={cm(left)} y1={cm(bottom)} x2={cm(right)} y2={cm(bottom)} stroke={LINE} />
+      {pageCount > 1 && (
+        <text textAnchor="end" x={cm(right)} y={cm(bottom + 0.42)} fontSize="13px" fill={MUTED_TEXT}>
+          {pageNumber} / {pageCount}
+        </text>
       )}
-
-      {/* Footer text */}
-      <>
-        {showYearFooter && (
-          <text
-            textAnchor="middle"
-            x={`${svgWidth / 2}cm`}
-            y={`${svgHeight - margin + pxToCm(16)}cm`}
-            fontSize="16px"
-          >
-            {firstDay.getFullYear() === new Date(firstDay.getTime() + weeksPerPage * 7 * 24 * 60 * 60 * 1000).getFullYear() 
-              ? firstDay.getFullYear() 
-              : `${firstDay.getFullYear()} - ${new Date(firstDay.getTime() + weeksPerPage * 7 * 24 * 60 * 60 * 1000).getFullYear()}`
-            }
-          </text>
-        )}
-
-        {pageCount > 1 && (
-          <>
-            {!showYearFooter && (
-              <text
-                textAnchor="middle"
-                x={`${svgWidth / 2}cm`}
-                y={`${svgHeight - margin + pxToCm(16)}cm`}
-                fontSize="16px"
-              >
-                {pageIndex! + 1} / {pageCount}
-              </text>
-            )}
-            {showYearFooter && (
-              <text
-                textAnchor="end"
-                x={`${svgWidth - margin}cm`}
-                y={`${svgHeight - margin + pxToCm(18) }cm`}
-                fontSize="16px"
-              >
-                {pageIndex! + 1} / {pageCount}
-              </text>
-          )}
-          </>
-        )}
-      </>
     </svg>
   );
 };

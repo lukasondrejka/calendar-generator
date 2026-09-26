@@ -1,61 +1,129 @@
+/* The window doesn't scroll, the sidebar and the preview scroll separately */
 .app {
-  background-color: #f9f9f9;
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.sidebar-box {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+}
+
+.preview {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 40px 32px 56px;
+}
+
+/* Pages wrap side by side when they fit */
+.preview-pages {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  min-height: 100vh;
+  align-items: flex-start;
+  gap: 36px 32px;
+}
 
-  .calendar-box {
-    flex: 1;
+/* As tall as the preview area (minus padding and caption), never wider */
+.calendar-page {
+  width: min(100%, calc((100dvh - 40px - 56px - 32px) * var(--page-aspect, 0.707)));
+
+  figcaption {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    text-align: center;
-    align-items: center;
     justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
 
-    &,
-    .calendar-page {
-      margin: 20px;
-      height: auto;
-      
-      .calendar-svg {
-        width: 600px;
-      }
+    strong {
+      font-weight: 600;
+      color: var(--text);
     }
+  }
+}
+
+@media (max-width: 1100px) {
+  .app {
+    grid-template-columns: 320px minmax(0, 1fr);
+  }
+
+  .preview {
+    padding-inline: 24px;
+  }
+}
+
+/* Mobile and very short windows: the whole page scrolls */
+@media (max-width: 719px), (max-height: 499px) {
+  .app {
+    display: block;
+    height: auto;
+    overflow: visible;
+    background: var(--surface);
   }
 
   .sidebar-box {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    width: 600px;
-    overflow-y: auto;
+    display: contents;
+    overflow: visible;
   }
 
-  @media (max-width: 992px) {
-    flex-direction: column-reverse;
+  .preview {
+    overflow: visible;
+    padding: 24px 16px 40px;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
 
-    .calendar-box {
-      margin: 0 20px;
+  .calendar-page {
+    width: min(100%, 560px);
+  }
+}
+
+/* Printing from the browser: only the calendar, one page per sheet */
+@media print {
+  .sidebar-box {
+    display: none !important;
+  }
+
+  .app,
+  .preview {
+    display: block;
+    height: auto;
+    overflow: visible;
+    padding: 0;
+    border: none;
+    background: #fff;
+  }
+
+  .preview-pages {
+    display: block;
+  }
+
+  .calendar-page {
+    width: 100%;
+    margin: 0;
+    break-after: page;
+
+    &:last-child {
+      break-after: auto;
     }
 
-    .sidebar-box {
-      position: unset;
-      top: unset;
-      width: 100%;
-      height: auto;
+    figcaption {
+      display: none;
     }
   }
 
-  @media (max-width: 768px) {
-    .calendar-box {
-      .calendar-page {
-        margin: 8px;
-
-        .calendar-svg {
-          width: 100%;
-        }
-      }
-    }
+  .calendar-svg {
+    box-shadow: none;
+    border-radius: 0;
   }
 }

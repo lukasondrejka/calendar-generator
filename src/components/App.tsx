@@ -1,39 +1,71 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
-import { AppStateContext } from '../AppStateContext';
+import { useSettings } from '../settings';
+import { buildPages, paperSizes } from '../calendar';
+import { formatDateRange, toDateString } from '../utils/date';
+import { downloadPDF, openPDF } from '../utils/pdf';
 import CalendarSVG from './CalendarSVG';
 import Sidebar from './Sidebar';
-import { downloadPDF, openPDF } from '../utils/pdf';
 
 const App: React.FC = () => {
-  const { state } = useContext(AppStateContext)!;
+  const { settings, update, reset } = useSettings();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [, setFontsLoaded] = useState(false);
 
-  const { pageCount, pageSize } = state;
+  // Re-render with the web font loaded, the header text is measured with it
+  useEffect(() => {
+    document.fonts.ready.then(() => setFontsLoaded(true));
+  }, []);
 
-  const getCalendarElements = (): Array<HTMLElement> =>
-    Array.from(document.querySelectorAll('.calendar-svg'));
+  const pages = buildPages(settings);
+  const paper = paperSizes[settings.pageSize];
 
-  const openPDFclick = () =>
-    openPDF(getCalendarElements(), pageSize);
-
-  const downloadPDFclick = () => 
-    downloadPDF(getCalendarElements(), pageSize);
+  const exportPDF = async (action: typeof downloadPDF) => {
+    setBusy(true);
+    setError(null);
+    try {
+      await action(Array.from(document.querySelectorAll('.calendar-svg')), {
+        ...paper,
+        title: settings.title.trim() || 'Calendar',
+        fileName: `calendar-${toDateString(pages[0].rangeStart)}.pdf`,
+      });
+    } catch (e) {
+      console.error(e);
+      setError('Could not generate the PDF. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <div className="app">
-      <div className="calendar-box">
-        {Array.from({ length: pageCount }).map((_, index) => (
-          <div className="calendar-page" key={index}>
-            <CalendarSVG pageIndex={index} />
-          </div>
-        ))}
-      </div>
-      <div className="sidebar-box">
+      <aside className="sidebar-box">
         <Sidebar
-          openPDF={openPDFclick}
-          downloadPDF={downloadPDFclick}        
+          settings={settings}
+          pages={pages}
+          update={update}
+          reset={reset}
+          busy={busy}
+          error={error}
+          onDownload={() => exportPDF(downloadPDF)}
+          onOpen={() => exportPDF(openPDF)}
         />
-      </div>
+      </aside>
+      <main className="preview" aria-label="Calendar preview">
+        <div className="preview-pages" style={{ '--page-aspect': paper.width / paper.height } as React.CSSProperties}>
+          {pages.map((page, index) => (
+            <figure className="calendar-page" key={index}>
+              <CalendarSVG settings={settings} page={page} pageNumber={index + 1} pageCount={pages.length} />
+              <figcaption>
+                {pages.length > 1 && <strong>Page {index + 1}</strong>}
+                <span>{formatDateRange(page.rangeStart, page.rangeEnd)}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </main>
+      <style>{`@page { size: ${paper.width}cm ${paper.height}cm; margin: 0; }`}</style>
     </div>
   );
 };
