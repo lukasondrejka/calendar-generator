@@ -1,50 +1,38 @@
-# React + TypeScript + Vite
+# Calendar Generator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Web application for generating printable calendars in PDF, where every week is one row. Layout, date range, paper, language and other options can be adjusted with a live preview. The application is built with React, TypeScript and Vite and runs entirely in the browser – nothing is uploaded, settings are stored in local storage.
 
-Currently, two official plugins are available:
+## Prerequisites
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Node.js
 
-## Expanding the ESLint configuration
+## Setup
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Install dependencies
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```sh
+npm install
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+Run development server
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```sh
+npm run dev
 ```
+
+## Scripts
+
+- `npm run dev` - run development server with hot reloading
+- `npm run build` - type check and build application (output in `dist` directory)
+- `npm run preview` - serve built application locally
+- `npm run lint` - run lint
+
+The `dist` directory is a static site. For hosting on a subpath (e.g. GitHub Pages) build with `npx vite build --base ./`. The build reads the date and hash of the current git commit, shown in the About dialog.
+
+## Resources
+
+- [React](https://react.dev)
+- [TypeScript](https://www.typescriptlang.org/docs/)
+- [Vite](https://vite.dev) (build tool)
+- [jsPDF](https://github.com/parallax/jsPDF) (PDF generation)
+- [svg2pdf.js](https://github.com/yWorks/svg2pdf.js) (SVG rendering for jsPDF)
