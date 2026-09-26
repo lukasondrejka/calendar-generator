@@ -1,7 +1,7 @@
 import React from 'react';
 import './Sidebar.css';
 import { limits, locales } from '../settings';
-import type { PageSize, Settings, Units, WeekStart } from '../settings';
+import type { PageSize, Pagination, Settings, Units, WeekStart } from '../settings';
 import { paperSizes } from '../calendar';
 import type { CalendarPage } from '../calendar';
 import { formatDate, formatDateRange, MAX_YEAR, MIN_YEAR, toDateString } from '../utils/date';
@@ -32,12 +32,13 @@ const Sidebar: React.FC<{
   onOpen: () => void;
 }> = ({ settings, pages, update, reset, busy, error, onDownload, onOpen }) => {
   const {
-    weeksPerPage, startOnDate, startWeekOn, pageCount,
+    pagination, weeksPerPage, monthsPerPage, startOnDate, startWeekOn, pageCount,
     title, pageSize, margin, units, locale, shadeWeekends, showWeekNumbers,
   } = settings;
 
   const startDate = pages[0].rangeStart;
   const endDate = pages[pages.length - 1].rangeEnd;
+  const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 + endDate.getMonth() - startDate.getMonth() + 1;
 
   const toUnits = (lengthCm: number, step: number) => roundTo(units === 'in' ? cmToIn(lengthCm) : lengthCm, step);
   const paper = paperSizes[pageSize];
@@ -55,7 +56,7 @@ const Sidebar: React.FC<{
       <div className="summary" aria-live="polite">
         <span className="summary-range">{formatDateRange(startDate, endDate)}</span>
         <span className="summary-meta">
-          {plural(weeksPerPage * pageCount, 'week')}
+          {pagination === 'weeks' ? plural(weeksPerPage * pageCount, 'week') : plural(months, 'month')}
           {' '}· {plural(pageCount, 'page')} · {pageSize}
         </span>
       </div>
@@ -85,13 +86,31 @@ const Sidebar: React.FC<{
       <div className="sidebar-body">
         <section className="panel">
           <h2>Layout</h2>
-          <NumberField
-            id="weeksPerPage"
-            label="Weeks per page"
-            value={weeksPerPage}
-            {...limits.weeksPerPage}
-            onChange={(value) => update({ weeksPerPage: value })}
+          <Segmented<Pagination>
+            name="pagination"
+            label="Each page shows"
+            options={['weeks', 'months']}
+            labels={{ weeks: 'Weeks', months: 'Whole months' }}
+            value={pagination}
+            onChange={(value) => update({ pagination: value })}
           />
+          {pagination === 'weeks' ? (
+            <NumberField
+              id="weeksPerPage"
+              label="Weeks per page"
+              value={weeksPerPage}
+              {...limits.weeksPerPage}
+              onChange={(value) => update({ weeksPerPage: value })}
+            />
+          ) : (
+            <Segmented<'1' | '2'>
+              name="monthsPerPage"
+              label="Months per page"
+              options={['1', '2']}
+              value={String(monthsPerPage) as '1' | '2'}
+              onChange={(value) => update({ monthsPerPage: Number(value) as 1 | 2 })}
+            />
+          )}
         </section>
 
         <section className="panel">
@@ -118,6 +137,9 @@ const Sidebar: React.FC<{
                 </button>
               ))}
             </div>
+            {pagination === 'months' && (
+              <small className="hint">The calendar starts with the month of this date.</small>
+            )}
           </div>
           <div className="field-row">
             <NumberField

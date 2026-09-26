@@ -5,9 +5,12 @@ import { clamp, cmToIn, inToCm, roundTo } from './utils/units';
 export type PageSize = 'A4' | 'Letter';
 export type WeekStart = 'Monday' | 'Sunday';
 export type Units = 'cm' | 'in';
+export type Pagination = 'weeks' | 'months';
 
 export interface Settings {
+  pagination: Pagination;
   weeksPerPage: number;
+  monthsPerPage: 1 | 2;
   startOnDate: string;
   startWeekOn: WeekStart;
   pageCount: number;
@@ -63,7 +66,9 @@ const defaultSettings = (): Settings => {
   const letter = LETTER_REGIONS.includes(region);
 
   return {
+    pagination: 'weeks',
     weeksPerPage: 8,
+    monthsPerPage: 1,
     startOnDate: todayAsString(),
     startWeekOn: letter ? 'Sunday' : 'Monday',
     pageCount: 1,
@@ -87,7 +92,9 @@ const integer = (value: unknown, fallback: number, { min, max }: { min: number; 
 const sanitize = (value: Partial<Settings>): Settings => {
   const d = defaultSettings();
   return {
+    pagination: oneOf(value.pagination, ['weeks', 'months'], d.pagination),
     weeksPerPage: integer(value.weeksPerPage, d.weeksPerPage, limits.weeksPerPage),
+    monthsPerPage: oneOf(value.monthsPerPage, [1, 2], d.monthsPerPage),
     startOnDate: isValidDateString(value.startOnDate ?? '') ? value.startOnDate! : d.startOnDate,
     startWeekOn: oneOf(value.startWeekOn, ['Monday', 'Sunday'], d.startWeekOn),
     pageCount: integer(value.pageCount, d.pageCount, limits.pageCount),
