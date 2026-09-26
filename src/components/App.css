@@ -90,7 +90,8 @@
 
 /* Printing from the browser: only the calendar, one page per sheet */
 @media print {
-  .sidebar-box {
+  .sidebar-box,
+  .about {
     display: none !important;
   }
 

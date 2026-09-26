@@ -6,11 +6,13 @@ import { formatDateRange, toDateString } from '../utils/date';
 import { downloadPDF, openPDF } from '../utils/pdf';
 import CalendarSVG from './CalendarSVG';
 import Sidebar from './Sidebar';
+import About from './About';
 
 const App: React.FC = () => {
   const { settings, update, reset } = useSettings();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [, setFontsLoaded] = useState(false);
 
   // Re-render with the web font loaded, the header text is measured with it
@@ -50,6 +52,7 @@ const App: React.FC = () => {
           error={error}
           onDownload={() => exportPDF(downloadPDF)}
           onOpen={() => exportPDF(openPDF)}
+          onAbout={() => setAboutOpen(true)}
         />
       </aside>
       <main className="preview" aria-label="Calendar preview">
@@ -65,6 +68,7 @@ const App: React.FC = () => {
           ))}
         </div>
       </main>
+      <About open={aboutOpen} onClose={() => setAboutOpen(false)} />
       <style>{`@page { size: ${paper.width}cm ${paper.height}cm; margin: 0; }`}</style>
     </div>
   );

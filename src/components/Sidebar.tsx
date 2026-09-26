@@ -30,7 +30,8 @@ const Sidebar: React.FC<{
   error: string | null;
   onDownload: () => void;
   onOpen: () => void;
-}> = ({ settings, pages, update, reset, busy, error, onDownload, onOpen }) => {
+  onAbout: () => void;
+}> = ({ settings, pages, update, reset, busy, error, onDownload, onOpen, onAbout }) => {
   const {
     pagination, weeksPerPage, monthsPerPage, startOnDate, startWeekOn, pageCount,
     title, pageSize, margin, units, locale, shadeWeekends, showWeekNumbers,
@@ -50,6 +51,13 @@ const Sidebar: React.FC<{
         <div className="brand">
           <AppLogo />
           <h1>Calendar Generator</h1>
+          <button type="button" className="about-btn" onClick={onAbout} title="How to use it, tips and info">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 11v5.5M12 7.5h.01" />
+            </svg>
+            About
+          </button>
         </div>
       </header>
 

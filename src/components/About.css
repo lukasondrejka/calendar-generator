@@ -1,0 +1,138 @@
+.about {
+  width: min(560px, calc(100% - 32px));
+  max-height: calc(100dvh - 48px);
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+
+  &::backdrop {
+    background: rgba(20, 18, 14, 0.45);
+    backdrop-filter: blur(2px);
+  }
+
+  &[open] {
+    animation: about-in 0.18s ease-out;
+  }
+}
+
+@keyframes about-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+.about-content {
+  padding: 24px 28px 20px;
+  font-size: 0.9375rem;
+
+  h3 {
+    margin: 20px 0 8px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  p,
+  li {
+    color: var(--text);
+  }
+
+  .lead {
+    color: var(--text-muted);
+  }
+}
+
+.about-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+
+  .icon-btn {
+    margin: -4px -8px 0 0;
+  }
+}
+
+.steps {
+  counter-reset: step;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 34px;
+
+    &::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 1px;
+      display: grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+  }
+}
+
+.tips,
+.ideas {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  li::marker {
+    color: var(--text-muted);
+  }
+}
+
+.about-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+
+  .btn-secondary {
+    height: 38px;
+    font-size: 0.875rem;
+  }
+
+  .version {
+    flex-basis: 100%;
+    margin-top: 8px;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+}
+
+@media (max-width: 480px) {
+  .about-content {
+    padding: 20px 18px 16px;
+  }
+}
