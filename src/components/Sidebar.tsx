@@ -9,6 +9,7 @@ import { cmToIn, inToCm, roundTo } from '../utils/units';
 import { GITHUB_URL } from '../constants';
 import { NumberField, Segmented, SelectField, TextField, Toggle } from './FormControls';
 import { AppLogo, GitHubIcon } from './Icons';
+import ThemeToggle from './ThemeToggle';
 
 const datePresets = () => {
   const today = new Date();
@@ -235,9 +236,12 @@ const Sidebar: React.FC<{
         <button type="button" className="btn btn-ghost" onClick={reset} title="Reset all settings to defaults">
           Reset
         </button>
-        <a className="icon-btn icon-btn-sm" href={GITHUB_URL} target="_blank" rel="noreferrer" aria-label="Source on GitHub" title="Source on GitHub">
-          <GitHubIcon />
-        </a>
+        <div className="footer-end">
+          <ThemeToggle />
+          <a className="icon-btn icon-btn-sm" href={GITHUB_URL} target="_blank" rel="noreferrer" aria-label="Source on GitHub" title="Source on GitHub">
+            <GitHubIcon />
+          </a>
+        </div>
       </footer>
     </div>
   );

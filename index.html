@@ -9,6 +9,12 @@
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1e1e1e" media="(prefers-color-scheme: dark)" />
     <title>Calendar Generator</title>
+    <script>
+      try {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+      } catch {}
+    </script>
     <meta name="description" content="Effortlessly plan your upcoming weeks with a custom calendar in PDF format. Choose your start date, set week length, and download a ready-to-print PDF to stay organized.">
     <meta name="keywords" content="calendar PDF generator, custom weekly calendar, printable calendar, weekly planner, download calendar PDF, organize weeks, personalized calendar, plan schedule">
     <link rel="preconnect" href="https://fonts.googleapis.com">
