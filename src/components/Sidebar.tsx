@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import './Sidebar.css';
 import { AppStateContext } from '../AppStateContext';
-import { firstDayOfWeek } from '../utils/date';
+import { firstDayOfWeek, parseDate } from '../utils/date';
 
 const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ openPDF, downloadPDF }) => {
   const { state, dispatch }  = useContext(AppStateContext)!;
@@ -9,7 +9,7 @@ const Sidebar: React.FC<{ openPDF: () => void; downloadPDF: () => void }> = ({ o
   const { startOnDate, startWeekOn, pageCount, weeksPerPage, pageSize, showYearFooter } = state;
 
   const getRange = (): string => {
-    const startDate = firstDayOfWeek(new Date(startOnDate), startWeekOn === 'Sunday');
+    const startDate = firstDayOfWeek(parseDate(startOnDate), startWeekOn === 'Sunday');
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 7 * weeksPerPage * pageCount - 1);
 

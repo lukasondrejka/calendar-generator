@@ -8,9 +8,15 @@ export const pageSizes = {
 };
 
 export const openPDF = async (elements: Array<Element>, pageSize: 'A4' | 'Letter') => {
+  // Opened right in the click handler, a tab opened after the async render would be blocked as a popup
+  const tab = window.open('', '_blank');
   const document = await createPDF(elements, pageSize);
 
-  if (document)
+  if (!document)
+    tab?.close();
+  else if (tab)
+    tab.location.href = document.output('bloburl').toString();
+  else
     window.open(document.output('bloburl'));
 }
 
@@ -46,7 +52,6 @@ const createPDF = async (elements: Array<Element>, pageSize: 'A4' | 'Letter'): P
   document.setFont('Work Sans');
 
   for (const [index, element] of elements.entries()) {
-    // @ts-ignore
     await document.svg(preprocessSVG(element));
     
     if (index < elements.length - 1) 

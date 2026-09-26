@@ -17,7 +17,7 @@ export interface State {
 const initialState = (reset: boolean = false): State => {
   const defaultState: State = {
     startOnDate: todayAsString(),
-    startWeekOn: '',
+    startWeekOn: 'Monday',
     weeksPerPage: 12,
     pageCount: 1,
     pageSize: 'A4',
@@ -32,7 +32,8 @@ const initialState = (reset: boolean = false): State => {
     ...(!reset ? getItem('state') : {}),
   };
 
-  if (state?.timestamp + 24 * 60 * 60 * 1000 > Date.now().valueOf()) {
+  // A start date saved more than a day ago is outdated
+  if (state.timestamp + 24 * 60 * 60 * 1000 < Date.now().valueOf()) {
     state.startOnDate = todayAsString();
   }
 

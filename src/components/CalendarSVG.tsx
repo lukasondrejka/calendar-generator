@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import './CalendarSVG.css';
 import { AppStateContext } from '../AppStateContext';
 import { cmToPx, pxToCm } from '../utils/units';
-import { addWeeks, firstDayOfWeek } from '../utils/date';
+import { addWeeks, firstDayOfWeek, parseDate } from '../utils/date';
 import { pageSizes } from '../utils/pdf';
 
 const CalendarSVG: React.FC<{pageIndex?: number}> = ({ pageIndex }) => {
@@ -12,7 +12,7 @@ const CalendarSVG: React.FC<{pageIndex?: number}> = ({ pageIndex }) => {
 
   const { width: svgWidth, height: svgHeight } = pageSizes[pageSize as typeof pageSize];
 
-  const firstDay: Date = addWeeks(firstDayOfWeek(new Date(startOnDate), startWeekOn === 'Sunday'),
+  const firstDay: Date = addWeeks(firstDayOfWeek(parseDate(startOnDate), startWeekOn === 'Sunday'),
     pageIndex! * weeksPerPage);
 
   const daysOfWeek = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
